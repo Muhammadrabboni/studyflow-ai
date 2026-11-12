@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from app.routes.greeting import router as greeting_router
 
 from app.routes.assignments import router as assignments_router
 
@@ -75,6 +76,7 @@ async def validation_exception_handler(
 
 
 app.include_router(assignments_router)
+app.include_router(greeting_router)
 
 
 @app.get("/")
