@@ -1,7 +1,9 @@
 
-from fastapi import Header, HTTPException, status
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-# Predefined mock users
+security = HTTPBearer(auto_error=False)
+
 MOCK_USERS = {
     "user-a-token": {
         "id": "user-a",
@@ -22,33 +24,22 @@ MOCK_USERS = {
 
 
 def get_current_user(
-    authorization: str | None = Header(default=None)
+    credentials: HTTPAuthorizationCredentials | None = Depends(security)
 ):
-    # Check whether the Authorization header exists
-    if not authorization:
+    if credentials is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication token is required."
+            status_code=401,
+            detail="Authentication token is required.",
+            headers={"WWW-Authenticate": "Bearer"}
         )
 
-    # Check Bearer token format
-    parts = authorization.split()
-
-    if len(parts) != 2 or parts[0].lower() != "bearer":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization format."
-        )
-
-    token = parts[1]
-
-    # Validate token
-    user = MOCK_USERS.get(token)
+    user = MOCK_USERS.get(credentials.credentials)
 
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token."
+            status_code=401,
+            detail="Invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"}
         )
 
     return user
