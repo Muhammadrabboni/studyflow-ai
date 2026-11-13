@@ -1,0 +1,120 @@
+
+@baseUrl = http://127.0.0.1:8000
+@userAToken = user-a-token
+@userBToken = user-b-token
+@adminToken = admin-token
+
+### 1. Project greeting (no authentication required)
+GET {{baseUrl}}/api/v1/greeting
+
+
+### 2. Get all assignments as User A
+GET {{baseUrl}}/api/v1/assignments
+Authorization: Bearer {{userAToken}}
+
+
+### 3. Get all assignments as User B
+GET {{baseUrl}}/api/v1/assignments
+Authorization: Bearer {{userBToken}}
+
+
+### 4. Get all assignments as Admin
+GET {{baseUrl}}/api/v1/assignments
+Authorization: Bearer {{adminToken}}
+
+
+### 5. Filter assignments by course
+GET {{baseUrl}}/api/v1/assignments?course=Machine%20Learning
+Authorization: Bearer {{userAToken}}
+
+
+### 6. Filter assignments by status
+GET {{baseUrl}}/api/v1/assignments?status=pending
+Authorization: Bearer {{userAToken}}
+
+
+### 7. Filter assignments by deadline
+GET {{baseUrl}}/api/v1/assignments?deadline_before=2026-11-25
+Authorization: Bearer {{userAToken}}
+
+
+### 8. Pagination
+GET {{baseUrl}}/api/v1/assignments?page=1&per_page=2
+Authorization: Bearer {{userAToken}}
+
+
+### 9. Get a specific assignment
+GET {{baseUrl}}/api/v1/assignments/assignment_101
+Authorization: Bearer {{userAToken}}
+
+
+### 10. Create an assignment
+POST {{baseUrl}}/api/v1/assignments
+Authorization: Bearer {{userAToken}}
+Content-Type: application/json
+
+{
+    "title": "Complete API Documentation",
+    "description": "Prepare the documentation for the StudyFlow AI API.",
+    "course": "Software Engineering",
+    "deadline": "2026-11-30",
+    "priority": "high",
+    "status": "pending"
+}
+
+
+### 11. Update an assignment
+# Replace assignment_105 with the ID returned by the create request.
+PUT {{baseUrl}}/api/v1/assignments/assignment_105
+Authorization: Bearer {{userAToken}}
+Content-Type: application/json
+
+{
+    "title": "Updated API Documentation",
+    "description": "Complete and review the StudyFlow AI API documentation.",
+    "course": "Software Engineering",
+    "deadline": "2026-12-01",
+    "priority": "medium",
+    "status": "in_progress"
+}
+
+
+### 12. Delete an assignment
+# Replace assignment_105 with the ID you want to delete.
+DELETE {{baseUrl}}/api/v1/assignments/assignment_105
+Authorization: Bearer {{userAToken}}
+
+
+### 13. Test missing authentication
+GET {{baseUrl}}/api/v1/assignments
+
+
+### 14. Test invalid authentication
+GET {{baseUrl}}/api/v1/assignments
+Authorization: Bearer invalid-token
+
+
+### 15. Test accessing another user's assignment
+# User A should not be able to access User B's assignment.
+GET {{baseUrl}}/api/v1/assignments/assignment_103
+Authorization: Bearer {{userAToken}}
+
+
+### 16. Test a nonexistent assignment
+GET {{baseUrl}}/api/v1/assignments/assignment_999
+Authorization: Bearer {{userAToken}}
+
+
+### 17. Test invalid assignment data
+POST {{baseUrl}}/api/v1/assignments
+Authorization: Bearer {{userAToken}}
+Content-Type: application/json
+
+{
+    "title": "A",
+    "description": "",
+    "course": "M",
+    "deadline": "invalid-date",
+    "priority": "urgent",
+    "status": "unknown"
+}
